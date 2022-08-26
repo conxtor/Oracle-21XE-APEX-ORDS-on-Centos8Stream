@@ -48,10 +48,10 @@ I also recommend to install Oracle DB from .rpm packages. It's easier and faster
     2. Enter the password of your choice when for the administrative users when prompted to do so by the script. 
     3. After the process finishes, set Oracle DB XE and TNSListener to start automatically on system reboot: ```chkconfig oracle-xe-21c on```.
 
-    &nbsp;
-    > If, for whatever reason, anything goes wrong with your database, one of the installation steps of APEX or ORDS fails and you would like to start over, you can run ```/etc/init.d/oracle-xe-21c delete``` to completely delete your database instance and start over by re-running ```/etc/init.d/oracle-xe-21c configure```.
 
-3. Download and install APEX:
+> If, for whatever reason, anything goes wrong with your database, one of the installation steps of APEX or ORDS fails and you would like to start over, you can run ```/etc/init.d/oracle-xe-21c delete``` to completely delete your database instance and start over by re-running ```/etc/init.d/oracle-xe-21c configure```.
+
+## Install and configure APEX
 
 
 # --- Work In Progress - To be continued ---
