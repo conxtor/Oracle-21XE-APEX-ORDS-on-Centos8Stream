@@ -52,3 +52,6 @@ I also recommend to install Oracle DB from .rpm packages. It's easier and faster
     > If, for whatever reason, anything goes wrong with your database, one of the installation steps of APEX or ORDS fails and you would like to start over, you can run ```/etc/init.d/oracle-xe-21c delete``` to completely delete your database instance and start over by re-running ``/etc/init.d/oracle-xe-21c configure```.
 
 3. Download and install APEX:
+
+
+# --- Work In Progress - To be continued ---
