@@ -16,7 +16,7 @@ I'm using a 6€ a month CX21 Hetzner Cloud server. They are affordable, reliabl
 1. Get a server or a cloud instance with 4 GB RAM, 30 (better 40) GB of SSD and at least a public IPv4 address. IPv6 optional but recommended. Operating system should be CentOS 8 Stream. 
 2. Have a A/AAAA (or both) DNS record pointing at that server's IP(s).
 3. Update your OS with ```dnf update```
-4. Install some prerequisites with ```dnf install -y nano git java-17-openjdk yum-utils epel-release firewalld```
+4. Install some prerequisites with ```dnf install -y nano git java-17-openjdk yum-utils epel-release firewalld sudo unzip```
 5. After adding the epel-release (CentOS Contrib repo) you need to install some more tools: ```dnf install -y nginx certbot python3-certbot-nginx```
 6. Download the Oracle Database Preinstall package: ```wget https://yum.oracle.com/repo/OracleLinux/OL8/appstream/x86_64/getPackage/oracle-database-preinstall-21c-1.0-1.el8.x86_64.rpm```
 
@@ -44,14 +44,66 @@ I also recommend to install Oracle DB from .rpm packages. It's easier and faster
 
 2. Configuration and database setup: 
 
-    1. Run ```/etc/init.d/oracle-xe-21c configure```. This command fails the first time I run it, at least on Centos 8 Stream. If that happens to you, just re-run it, it should work fine the second time. 
-    2. Enter the password of your choice when for the administrative users when prompted to do so by the script. 
-    3. After the process finishes, set Oracle DB XE and TNSListener to start automatically on system reboot: ```chkconfig oracle-xe-21c on```.
+    a. Run ```/etc/init.d/oracle-xe-21c configure```. This command fails the first time I run it, at least on Centos 8 Stream. If that happens to you, just re-run it, it should work fine the second time. 
+
+    b. Enter the password of your choice when for the administrative users when prompted to do so by the script.   
+
+    c. After the process finishes, set Oracle DB XE and TNSListener to start automatically on system reboot: ```chkconfig oracle-xe-21c on```.  
+
+    d. Change to the Oracle user: ```sudo su - oracle```. 
+
+    e. Add the following lines to the end of that users' .bash_profile after the line ```# User specific environment and startup programs```. 
+
+    ```
+    export ORACLE_SID=XE 
+    export ORAENV_ASK=NO 
+    . /opt/oracle/product/21c/dbhomeXE/bin/oraenv 
+    ```
+
+    f. Exit the oracle user. The next time you use the oracle user, the proper environment will be loaded
 
 
-> If, for whatever reason, anything goes wrong with your database, one of the installation steps of APEX or ORDS fails and you would like to start over, you can run ```/etc/init.d/oracle-xe-21c delete``` to completely delete your database instance and start over by re-running ```/etc/init.d/oracle-xe-21c configure```.
+
+> **If, for whatever reason, anything goes wrong with your database, one of the installation steps of APEX or ORDS fails and you would like to start over, you can run ```/etc/init.d/oracle-xe-21c delete``` to completely delete your database instance and start over by re-running ```/etc/init.d/oracle-xe-21c configure```.**
 
 ## Install and configure APEX
+> **Please conduct the next steps as the ```oracle``` user!**. 
+
+1. Download the Oracle APEX .zip packege: ``` wget https://download.oracle.com/otn_software/apex/apex_22.1.zip```
+2. Unzip the downloaded package: ```unzip apex_22.1.zip```
+3. Change into the unzipped folder: ```cd apex```
+4. Start **```sqlplus```** and run the following commands as follows, when prompted for a password, specify the one given during Oracle DB installation:
+```
+[oracle@oracle ~]$ sqlplus /nolog
+
+SQL*Plus: Release 21.0.0.0.0 - Production on Sun Aug 28 11:09:58 2022
+Version 21.3.0.0.0
+
+Copyright (c) 1982, 2021, Oracle.  All rights reserved.
+
+SQL> connect sys as sysdba
+Enter password: 
+Connected.
+SQL> alter session set container=xepdb1;
+
+Session altered.
+
+SQL> @apexins.sql SYSAUX SYSAUX TEMP /i/
+```
+This process will take quite a while. Be patient, with the limits of Oracle XE and the suggested machine size, it can take around 8-12 minutes. 
+
+5. In the same **```sqlplus```** session, run the following command: 
+```
+@apxchpwd.sql
+```
+
+Please follow the prompts given. These credentials provided will be the main administrator for your APEX instance. 
+
+6. Run the following commands in the same **```sqlplus```** session: 
+````
+ALTER USER APEX_PUBLIC_USER ACCOUNT UNLOCK
+
+
 
 
 # --- Work In Progress - To be continued ---
